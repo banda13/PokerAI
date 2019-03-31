@@ -22,13 +22,13 @@ validation_label = data[train_length:, 10]
 
 # Our first Keras Model
 model = Sequential()
-model.add(Dense(400, input_shape=(10,), activation='relu'))
-model.add(Dense(800, activation='relu'))
-model.add(Dense(400, activation='relu'))
-model.add(Dense(nb_classes, activation='softmax', kernel_regularizer=l2(0.01)))
+model.add(Dense(1000, input_shape=(10,), activation='relu'))
+model.add(Dense(2000, activation='relu'))
+model.add(Dense(1000, activation='relu'))
+model.add(Dense(nb_classes, activation='softmax'))
 model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-history = model.fit(train_data, train_label, validation_split=0.33, shuffle=True, epochs=100, batch_size=32)
+history = model.fit(train_data, train_label, validation_split=0.33, shuffle=True, epochs=100, verbose=0, batch_size=32)
 
 loss, accuracy = model.evaluate(validation_data, validation_label, verbose=0)
 print("Test: accuracy=%f loss=%f" % (accuracy, loss))

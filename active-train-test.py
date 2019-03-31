@@ -5,7 +5,20 @@ from keras.engine.saving import load_model
 
 from name_generator import NameGenerator
 
-MODEL_DIR = "model/1553703294.3642073.h5"
+HAND_RECOGNIZER_MODEL_DIR = "model/1553703294.3642073.h5"
+
+hand_name = {
+    0: 'Nothing in hand',
+    1: 'One pair',
+    2: 'Two pairs',
+    3: 'Three of a kind',
+    4: 'Straight',
+    5: 'Flush',
+    6: 'Full house',
+    7: 'Four of a kind',
+    8: 'Straight flush',
+    9: 'Royal flush',
+}
 
 
 class Game(object):
@@ -16,25 +29,37 @@ class Game(object):
     start_balance = 100
     round_counter = 0
     player_lost = None
+    card_count = 300
+
+    model = None
 
     def __init__(self):
-        print("Simmulation started, setting up players and the dealer")
+        print("Simulation started, setting up players and the dealer")
 
-        self.dealer = Dealer(300)
+        self.dealer = Dealer(self.card_count)
 
         name_gen = NameGenerator()
         for k in range(self.num_players):
             self.players.append(Player(name_gen.get_name(), self.start_balance))
 
+        self.model = load_model(HAND_RECOGNIZER_MODEL_DIR)
+
         print("Player's are ready, lets start the match!")
 
-    def get_winner(self, bets):
+    def get_winner_and_pot(self, bets):
         pot = 0
-        for name, money in bets.items():
-            pot += money
+        winner = ''
+        winner_hand = 0
+        for name, info in bets.items():
+            pot += info['money']
+            hand = self.model.predict(info['cards'])
+            print("Player %s has %s" % (name, hand_name[hand]))
+            if hand > winner_hand:
+                winner_hand = hand
+                winner = name
+
         print("%d is the pot in the end of the round %d" % (pot, self.round_counter))
-        winner = random.choice(list(bets.keys())) # TODO find out real winner based on the cards!
-        print("%s is the winner" % winner)
+        print("%s is the winner of the round with %s" % (winner, (hand_name[winner_hand])))
         return winner, pot
 
     def play(self):
@@ -43,10 +68,11 @@ class Game(object):
             print("%d round started" % self.round_counter)
             bets = {}
             for p in self.players:
-                b = p.make_bet(self.dealer.get_cards())
-                bets[p.name] = b
+                c = self.dealer.get_cards()
+                b = p.make_bet(c)
+                bets[p.name] = {'cards': c, 'bet': b}
 
-            winner, pot = self.get_winner(bets)
+            winner, pot = self.get_winner_and_pot(bets)
 
             for p in self.players:
                 if p.name == winner:
@@ -77,6 +103,7 @@ class Dealer(object):
         c = []
         for i in range(5):
             c.append(self.cards.pop())
+        return c
 
 
 class Player(object):
@@ -85,7 +112,6 @@ class Player(object):
         self.money = start_balance
         self.cards = []
         self.bets = []
-        self.model = load_model(MODEL_DIR)
         self.name = name
         print("%s: Hi, im %s, and im ready to play" % (name, name))
 

@@ -69,6 +69,6 @@ class NameGenerator(object):
         print("Name generated: %s" % out)
         return out
 
-#n = NameGenerator()
-#n.train()
-#n.get_name()
+# n = NameGenerator()
+# n.train()
+# n.get_name()
