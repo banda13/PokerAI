@@ -45,11 +45,11 @@ class IntelligentPlayer(AbstractPlayer):
         self.bet_times.append(time.time() - start)
         return bet
 
-    def update(self, reward):
+    def update(self, reward, max_pot):
         start = time.time()
         self.balance += reward
         print("%s: My balance is %s" % (self.name, self.balance))
-        self.rewards.append(np.array([0 if reward == 0 else reward / 300]))
+        self.rewards.append(np.array([0 if reward == 0 else reward / max_pot]))
 
         self.model.train_on_batch(np.array([self.features[-1]]), np.array([self.rewards[-1]]))
         self.model.save_weights('model/%s.h5' % self.name)

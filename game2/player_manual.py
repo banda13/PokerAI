@@ -10,14 +10,14 @@ class ManualPlayer(AbstractPlayer):
     def __init__(self, start_balance):
         name = input("Type your name")
         super().__init__(name, start_balance)
-        print("%s: Hi, im %s, a dummy player and im ready to play" % (name, name))
+        print("%s: Hi, im %s, a real player and im ready to play" % (name, name))
 
     def make_bet(self, cards, hands, min_pot, enemy_money, enemy_rise):
         start = time.time()
         self.hands.append(hands)
 
         print("Hand: %s, Balance: %d, Minimum bet: %d, Enemy monies: %s, Enemy rises: %s" % (hands, self.balance, min_pot, str(enemy_money), str(enemy_rise)))
-        bet = input("Make your bet:")
+        bet = int(input("Make your bet:"))
         bet = self.validate_bet(bet, min_pot)
         self.bets.append(bet)
         self.balance -= bet
@@ -25,7 +25,7 @@ class ManualPlayer(AbstractPlayer):
         self.bet_times.append(time.time() - start)
         return bet
 
-    def update(self, reward):
+    def update(self, reward, max_pot):
         start = time.time()
         self.balance += reward
         print("%s: My balance is %s" % (self.name, self.balance))

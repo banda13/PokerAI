@@ -1,6 +1,7 @@
 import random
 import time
 import numpy as np
+import matplotlib.pyplot as plt
 
 from keras.engine.saving import load_model
 
@@ -23,13 +24,16 @@ class Game(object):
         self.players = players
         self.players_count = len(players)
         self.num_players = len(players)
+        self.max_pot = 0
+        for m in players:
+            self.max_pot += m.balance
 
         self.model = model if model is not None else load_model(HAND_RECOGNIZER_MODEL_DIR)
         self.start_time = time.time()
 
         self.round_counter = 0
-
-        self.bet_increase_rate = 3  # each 3 turn min bot is growing
+        self.bet_increase_rate = 2  # in x each turn min bot is growing
+        self.bet_increase_value = 5  # how much will it grow
 
         print("Player's are ready, lets start the match!")
 
@@ -44,7 +48,7 @@ class Game(object):
             # reorder players
             self.active_players.insert(0, self.active_players.pop())
             balances = get_player_balances(self)
-            min_bet = round(self.round_counter / 5)
+            min_bet = round(self.round_counter / self.bet_increase_rate) * self.bet_increase_value
             cards = []
             bets = []
             hands = []
@@ -69,17 +73,19 @@ class Game(object):
                     winners.append(self.active_players[player_idx])
 
             # Players updating they balances and may learn something
-            pot = round(np.sum(bets) / len(winners))
+            pot = round(np.sum(bets))
             print("%s are the winner(s) %d is the pot" % (str(winners), pot))
+            i = 0
             for p in self.active_players:
                 if p in winners:
-                    p.update(pot)
+                    p.update(pot if len(winners) == 1 else pot * (bets[i] / pot), self.max_pot)
                 else:
-                    p.update(0)
+                    p.update(0, self.max_pot)
 
-                if not p.check_status(round((self.round_counter+1) / 5)):
+                if not p.check_status(round((self.round_counter+1) / self.bet_increase_rate) * self.bet_increase_value):
                     self.active_players.remove(p)
                     self.inactive_players.append(p)
+                i += 1
 
             # Checking if game ended
             if len(self.active_players) == 1:
@@ -101,6 +107,29 @@ class Game(object):
                   "%.2f%% round_win rate\n"
                   "%.2f sec average bet time\n"
                   "%.2f sec average update time" % p.evaluate_player())
+            plt.plot(p.hands)
+            bets = []
+            for b in p.bets:
+                bets.append(b / 10)
+            plt.plot(bets)
+            plt.title(p.name)
+            plt.grid()
+            plt.savefig('results/' + p.name + ".png")
+            plt.close()
+
+    def final_evaluate(self):
+        self.evaluate()
+        for p in (self.inactive_players + self.active_players):
+            plt.plot(p.hands)
+            bets = []
+            for b in p.bets:
+                bets.append(b / 10)
+            plt.plot(bets)
+            plt.title(p.name)
+            plt.grid()
+            plt.savefig('results/' + p.name + ".png")
+            plt.close()
+
 
     def __del__(self):
         pass

@@ -32,7 +32,7 @@ class NotDummyPlayer(AbstractPlayer):
         self.bet_times.append(time.time() - start)
         return bet
 
-    def update(self, reward):
+    def update(self, reward, max_pot):
         start = time.time()
         self.balance += reward
         print("%s: My balance is %s" % (self.name, self.balance))
