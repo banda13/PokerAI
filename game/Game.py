@@ -10,6 +10,8 @@ from game.Dealers import Dealer
 from game.Players import DummyPlayer, NeuralPlayer
 from name_generator import NameGenerator
 
+from keras import backend as K
+
 HAND_RECOGNIZER_MODEL_DIR = "model/1553883621.801545.h5"
 
 hand_name = {
@@ -120,3 +122,6 @@ class Game(object):
             avg_hands = np.average(p.hands)
             print("%s: Winrate: %f with %f avg. bets %f hand avrage" % (p.name, wins / float(self.games), avg_bet, avg_hands))
             print("%s runtime " % str(time.time() - self.start_time))
+
+
+
