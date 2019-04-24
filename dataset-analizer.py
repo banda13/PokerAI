@@ -1,6 +1,6 @@
 import numpy as np
 
-data = np.loadtxt("data/poker-hand-training-true.data", delimiter=",")
+data = np.loadtxt("data/poker_hand_extended_train.data", delimiter=",")
 
 # Some statistics to get acquainted with the data
 

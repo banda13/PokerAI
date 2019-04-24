@@ -10,10 +10,12 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 from sklearn.tree import export_graphviz, DecisionTreeClassifier
 from sklearn.utils import class_weight
 
+# https://dataaspirant.com/2017/01/30/how-decision-tree-algorithm-works/
+
 poker_hands = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 feature_names = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 
-data = np.loadtxt("data/poker-hand-training-true.data", delimiter=",")
+data = np.loadtxt("data/poker_hand_extended_train.data", delimiter=",")
 np.random.shuffle(data)
 
 data_distribution = 0.8
@@ -29,11 +31,11 @@ validation_label = data[train_length:, 10]
 
 
 print('Training decision tree')
-dtree = tree.DecisionTreeClassifier(criterion="entropy", max_depth=7, class_weight="balanced")
+dtree = tree.DecisionTreeClassifier(min_weight_fraction_leaf=0.000001, class_weight="balanced")
 dtree.fit(train_data, train_label)
 
 print("Validating decision tree")
-scores = cross_val_score(dtree, validation_data, validation_label, cv=5)
+scores = cross_val_score(dtree, validation_data, validation_label)
 print(scores.mean())
 
 print("Testing decision tree")
@@ -44,7 +46,7 @@ print("Accuracy:" , accuracy_score(validation_label, predictions))
 print("-------------------")
 
 print("Training random forrest")
-rforrest = RandomForestClassifier(n_estimators=10, max_depth=None, min_samples_split=2, random_state=0)
+rforrest = RandomForestClassifier() # n_estimators=10, max_depth=None, min_samples_split=2, random_state=0
 rforrest.fit(train_data, train_label)
 
 print("Validating random forrest")
@@ -87,8 +89,8 @@ print("-------------------")
 
 print("Training tree with boost")
 aboost = AdaBoostClassifier(
-    DecisionTreeClassifier(max_depth=2),
-    n_estimators=600,
+    DecisionTreeClassifier(),
+    n_estimators=300,
     learning_rate=1)
 aboost.fit(train_data, train_label)
 
