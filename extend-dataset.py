@@ -20,9 +20,9 @@ def shuffle_pairs(generated):
         g = g.tolist()
         hand = g.pop(-1)
         shifted = g.copy()
-        shifted.append(shifted.pop(0))  # O(?)
+        shifted.append(shifted.pop(0))
         pairs = []
-        for x, y in list(zip(g, shifted))[::2]:  # speed? seems a bit slow..
+        for x, y in list(zip(g, shifted))[::2]:
             pairs.append([x, y])
         random.shuffle(pairs)
         res = [item for sublist in pairs for item in sublist]
@@ -37,9 +37,9 @@ def generate_data(count, values):
         return random.sample(values, count)
     else:
         generated = []
-        diff_scale = int(math.ceil(count / len(values)))
-        for j in range(diff_scale):
-            generated.extend(random.sample(values, int(count / diff_scale)))
+        batch = min(100, len(values)-1)
+        for j in range(count//batch):
+            generated.extend(random.sample(values,batch))
         return shuffle_pairs(generated)
 
 

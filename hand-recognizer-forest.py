@@ -20,7 +20,7 @@ validation_data = data[train_length:, :10]
 validation_label = data[train_length:, 10]
 
 print("Training random forrest")
-forrest = RandomForestClassifier(n_estimators=3)
+forrest = RandomForestClassifier(n_estimators=40)
 forrest.fit(train_data, train_label)
 
 predictions = forrest.predict(train_data)

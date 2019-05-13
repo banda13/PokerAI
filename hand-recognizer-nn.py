@@ -4,11 +4,12 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 from keras import Sequential
-from keras.layers import Dense
+from keras.callbacks import TensorBoard
+from keras.layers import Dense, Dropout
 
 print("Reading data sources")
-train_data_source = np.loadtxt("data/poker_hand_extended_train.data", delimiter=",")
-test_data_source = np.loadtxt("data/poker_hand_extended_train.data", delimiter=",")
+train_data_source = np.loadtxt("data/poker-hand-training-true.data", delimiter=",")
+test_data_source = np.loadtxt("data/poker-hand-testing.data", delimiter=",")
 nb_classes = 10
 
 random.shuffle(train_data_source)
@@ -29,16 +30,21 @@ test_data = test_data_source[:, :10]
 test_labels = test_data_source[:, 10]
 
 model = Sequential()
-model.add(Dense(200, input_shape=(10,), activation='relu'))
-model.add(Dense(400, activation='relu'))
-model.add(Dense(200, activation='relu'))
+model.add(Dense(1000, input_shape=(10,), activation='relu'))
+model.add(Dropout(0.1))
+model.add(Dense(2000, activation='relu'))
+model.add(Dropout(0.1))
+model.add(Dense(1000, activation='relu'))
 model.add(Dense(nb_classes, activation='softmax'))
-model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 print("Model created, training started")
 
+callbacks = [TensorBoard(log_dir="logs/{}".format("temp1"))]
+
 history = model.fit(train_data, train_label,
+                    callbacks=callbacks,
                     batch_size=32,
-                    epochs=30,
+                    epochs=200,
                     validation_data=(validation_data, validation_label),
                     shuffle=True)
 

@@ -2,7 +2,7 @@ import numpy as np
 from abc import ABC # require python 3.4+
 from keras.engine.saving import load_model
 
-HAND_RECOGNIZER_MODEL_DIR = "model/1553883621.801545.h5"
+HAND_RECOGNIZER_MODEL_DIR = "model/1556041857.1677544.h5"
 
 '''
 Abstract Base class for all player

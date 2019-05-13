@@ -10,7 +10,7 @@ from game2.game_utils import get_player_balances
 
 from keras import backend as K
 
-HAND_RECOGNIZER_MODEL_DIR = "model/1553883621.801545.h5"
+HAND_RECOGNIZER_MODEL_DIR = "model/1556041857.1677544.h5"
 
 
 class Game(object):
@@ -48,6 +48,7 @@ class Game(object):
             # reorder players
             self.active_players.insert(0, self.active_players.pop())
             balances = get_player_balances(self)
+            # min_bet = 10
             min_bet = round(self.round_counter / self.bet_increase_rate) * self.bet_increase_value
             cards = []
             bets = []
@@ -120,10 +121,10 @@ class Game(object):
     def final_evaluate(self):
         self.evaluate()
         for p in (self.inactive_players + self.active_players):
-            plt.plot(p.hands)
+            # plt.plot(p.hands)
             bets = []
             for b in p.bets:
-                bets.append(b / 10)
+                bets.append(b)
             plt.plot(bets)
             plt.title(p.name)
             plt.grid()

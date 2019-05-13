@@ -13,7 +13,7 @@ class IntelligentPlayer(AbstractPlayer):
         super().__init__(name, start_balance)
 
         self.model = Sequential()
-        self.model.add(Dense(32, input_shape=(8,), activation='relu'))
+        self.model.add(Dense(32, input_shape=(9,), activation='relu'))
         self.model.add(Dense(64, activation='relu'))
         self.model.add(Dense(32, activation='relu'))
         self.model.add(Dense(1, activation='sigmoid'))
@@ -34,7 +34,7 @@ class IntelligentPlayer(AbstractPlayer):
             avg_rise, max_rise, min_rise = np.average(enemy_rises), np.max(enemy_rises), np.min(enemy_rises)
         else:
             avg_rise, max_rise, min_rise = 0, 0, 0
-        features = np.array([hands, min_pot, avg_balance, max_balance, min_balance, avg_rise, max_rise, min_rise])
+        features = np.array([hands, min_pot, self.balance, avg_balance, max_balance, min_balance, avg_rise, max_rise, min_rise])
         self.features.append(features)
 
         bet = round(self.model.predict(np.array([features]))[0][0] * 100)
